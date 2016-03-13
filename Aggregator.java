@@ -38,13 +38,10 @@ public class Aggregator {
         }
     }
 
-    public String aggregatedListOfNames() {
-        String toReturn = "";
+    public void printAggregatedListOfNames() {
         for (Map.Entry<String, ArrayList<Match>> entry : aggregatedListOfMatches.entrySet()) {
-            toReturn += entry.getKey() + "-->";
-            toReturn += entry.getValue().toString();
-            toReturn += "\n\n";
+            System.out.print(entry.getKey() + "-->");
+            System.out.print(entry.getValue().toString() + "\n\n");
         }
-        return toReturn;
     }
 }

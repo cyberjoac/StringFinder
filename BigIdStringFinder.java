@@ -58,7 +58,7 @@ public class BigIdStringFinder {
         this.futures = new LinkedList<Future<?>>();
     }
 
-    public String findEnglishMostCommonNames() {
+    public void findEnglishMostCommonNames() {
         try {
             BufferedReader bufferedReader
                     = new BufferedReader(new FileReader(fileName));
@@ -94,7 +94,7 @@ public class BigIdStringFinder {
         finally {
             executorService.shutdown();
         }
-        return aggregator.aggregatedListOfNames();
+        aggregator.printAggregatedListOfNames();
     }
     
     private void startAsynchronousMatcher(ArrayList<String> thousandLines, int lineNumber) {
@@ -130,7 +130,6 @@ public class BigIdStringFinder {
      */
     public static void main(String[] args) {
         BigIdStringFinder stringFinder = new BigIdStringFinder("big.txt");
-        String englishCommonNames = stringFinder.findEnglishMostCommonNames();
-        System.out.println(englishCommonNames);
+        stringFinder.findEnglishMostCommonNames();
     }
 }
