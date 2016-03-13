@@ -1,4 +1,3 @@
-
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -6,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,7 +35,7 @@ public class BigIdStringFinder {
     // 10 sounds like a reasonable number of threads.
     private static final int NUMBER_OF_THREADS = 10;
 
-    private ArrayList<Matcher> matchers;
+    private List<Matcher> matchers;
     private Aggregator aggregator;
     private ExecutorService executorService;
     private Collection<Future<?>> futures;
@@ -56,7 +56,6 @@ public class BigIdStringFinder {
         // We need to keep a reference to the "futures" of the threads to wait 
         // for their completion.
         this.futures = new LinkedList<Future<?>>();
-
     }
 
     public String findEnglishMostCommonNames() {
@@ -100,7 +99,7 @@ public class BigIdStringFinder {
     
     private void startAsynchronousMatcher(ArrayList<String> thousandLines, int lineNumber) {
         // .clone is necessary for thread-safe operation.
-        Matcher matcher = new Matcher((ArrayList<String>) thousandLines.clone(), lineNumber - 1000);
+        Matcher matcher = new Matcher((ArrayList<String>) thousandLines.clone(), lineNumber);
         // Executes in a new thread for efficiency and save 
         // the future for polling its completion.
         futures.add(executorService.submit(matcher));

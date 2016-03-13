@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**
@@ -11,7 +12,7 @@ public class Matcher implements Runnable {
     private final Pattern regexPattern;
     private java.util.regex.Matcher regexMatcher;
     
-    private ArrayList<Match> partialListOfMatches;
+    private List<Match> partialListOfMatches;
     
     /**
      * Gets at most 1000 lines of text as input and searches for matches of a 
@@ -44,7 +45,7 @@ public class Matcher implements Runnable {
         }
     }
 
-    public ArrayList<Match> getMatches() {
+    public List<Match> getMatches() {
         return partialListOfMatches;
     }
 

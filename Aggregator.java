@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -14,7 +15,7 @@ public class Aggregator {
      * [lineOffset=13000, charOffset=42023]] James --> [[lineOffset=12,
      * charOffset=455]] ...
      */
-    private HashMap<String, ArrayList<Match>> aggregatedListOfMatches;
+    private Map<String, ArrayList<Match>> aggregatedListOfMatches;
 
     /**
      * The aggregator ­ aggregates the results from all the matchers and prints
@@ -24,14 +25,14 @@ public class Aggregator {
         this.aggregatedListOfMatches = new HashMap<>();
     }
 
-    public void computeAggregatedList(ArrayList<Matcher> matchers) {
+    public void computeAggregatedList(List<Matcher> matchers) {
         for (Matcher matcher : matchers) {
-            ArrayList<Match> matches = matcher.getMatches();
+            List<Match> matches = matcher.getMatches();
             for (Match match : matches) {
                 String nameMatched = match.getName();
                 
                 aggregatedListOfMatches.putIfAbsent(nameMatched, new ArrayList<Match>());
-                ArrayList<Match> nameFinalMatches = aggregatedListOfMatches.get(nameMatched);
+                List<Match> nameFinalMatches = aggregatedListOfMatches.get(nameMatched);
                 nameFinalMatches.add(match);
             }
         }
@@ -42,7 +43,7 @@ public class Aggregator {
         for (Map.Entry<String, ArrayList<Match>> entry : aggregatedListOfMatches.entrySet()) {
             toReturn += entry.getKey() + "-->";
             toReturn += entry.getValue().toString();
-            toReturn += "\n";
+            toReturn += "\n\n";
         }
         return toReturn;
     }
