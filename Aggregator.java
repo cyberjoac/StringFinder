@@ -25,10 +25,9 @@ public class Aggregator {
         this.aggregatedListOfMatches = new HashMap<>();
     }
 
-    public void computeAggregatedList(List<Matcher> matchers) {
-        for (Matcher matcher : matchers) {
-            List<Match> matches = matcher.getMatches();
-            for (Match match : matches) {
+    public void computeAggregatedList(List<List<Match>> listOfMatches) {
+        for (List<Match> matchList : listOfMatches) {
+            for (Match match : matchList) {
                 String nameMatched = match.getName();
                 
                 aggregatedListOfMatches.putIfAbsent(nameMatched, new ArrayList<Match>());

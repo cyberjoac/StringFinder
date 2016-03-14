@@ -1,11 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  *
  * @author joachimhagege
  */
-public class Matcher implements Runnable {
+public class Matcher implements Callable<List<Match>> {
     private final ArrayList<String> lines;
     private final int startingLine;
     private AhoCorasick ahoCorasick;
@@ -38,12 +39,9 @@ public class Matcher implements Runnable {
         partialListOfMatches.addAll(ahoCorasick.lineListOfMatches(line, lineNumber));
     }
 
-    public List<Match> getMatches() {
-        return partialListOfMatches;
-    }
-
     @Override
-    public void run() {
+    public List<Match> call() throws Exception {
         computeMatches();
+        return partialListOfMatches;
     }
 }

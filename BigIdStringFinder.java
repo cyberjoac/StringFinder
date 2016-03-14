@@ -22,11 +22,11 @@ public class BigIdStringFinder {
     // 10 sounds like a reasonable number of threads.
     private static final int NUMBER_OF_THREADS = 10;
 
-    private List<Matcher> matchers;
+    private List<List<Match>> listOfMatches;
     private AhoCorasick ahoCorasick;
     private Aggregator aggregator;
     private ExecutorService executorService;
-    private Collection<Future<?>> futures;
+    private Collection<Future<List<Match>>> futures;
 
     /**
      * Creates a BigId object responsible for our main flow.
@@ -36,7 +36,7 @@ public class BigIdStringFinder {
     public BigIdStringFinder(String fileName) {
         this.fileName = fileName;
         this.ahoCorasick = new AhoCorasick("list-of-names.csv");
-        this.matchers = new ArrayList<Matcher>();
+        this.listOfMatches = new ArrayList<>();
         this.aggregator = new Aggregator();
         // Our Executor service will be responsible for distributing the Matchers 
         // accross the workers.
@@ -44,7 +44,7 @@ public class BigIdStringFinder {
         
         // We need to keep a reference to the "futures" of the threads to wait 
         // for their completion.
-        this.futures = new LinkedList<Future<?>>();
+        this.futures = new LinkedList<Future<List<Match>>>();
     }
 
     public void findEnglishMostCommonNames() {
@@ -73,7 +73,7 @@ public class BigIdStringFinder {
             waitForAllMatchersCompletion();
 
             // Once all the threads are done, go here.
-            aggregator.computeAggregatedList(matchers);
+            aggregator.computeAggregatedList(listOfMatches);
         } catch (FileNotFoundException e) {
             System.out.println("Unable to open file '" + fileName + "'");
         } catch (IOException e) {
@@ -91,9 +91,7 @@ public class BigIdStringFinder {
         Matcher matcher = new Matcher((ArrayList<String>) thousandLines.clone(), lineNumber, ahoCorasick);
         // Executes in a new thread for efficiency and save 
         // the future for polling its completion.
-        futures.add(executorService.submit(matcher));
-        // Saves a reference of all the matchers.
-        matchers.add(matcher);        
+        futures.add(executorService.submit(matcher));     
     }
 
     /**
@@ -103,9 +101,9 @@ public class BigIdStringFinder {
      * for completion of all the tasks at this stage.
      */
     private void waitForAllMatchersCompletion() {
-        for (Future<?> future : futures) {
+        for (Future<List<Match>> future : futures) {
             try {
-                future.get();
+                this.listOfMatches.add(future.get());
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             } catch (ExecutionException e) {
