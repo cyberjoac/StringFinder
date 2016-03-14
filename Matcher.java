@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  *
@@ -9,9 +8,8 @@ import java.util.regex.Pattern;
 public class Matcher implements Runnable {
     private final ArrayList<String> lines;
     private final int startingLine;
-    private final Pattern regexPattern;
-    private java.util.regex.Matcher regexMatcher;
-    
+    private AhoCorasick ahoCorasick;
+   
     private List<Match> partialListOfMatches;
     
     /**
@@ -19,11 +17,12 @@ public class Matcher implements Runnable {
      * given set of strings. 
      * @param lines
      * @param startingLine
+     * @param ahoCorasick
      */
-    public Matcher (ArrayList<String> lines, int startingLine) {
+    public Matcher (ArrayList<String> lines, int startingLine, AhoCorasick ahoCorasick) {
         this.lines = lines;
         this.startingLine = startingLine;
-        this.regexPattern = Pattern.compile(BigIdStringFinder.listOfNamesRegex, Pattern.CASE_INSENSITIVE);
+        this.ahoCorasick = ahoCorasick;
         this.partialListOfMatches = new ArrayList<Match>();
     }
     
@@ -36,13 +35,7 @@ public class Matcher implements Runnable {
     }
     
     private void findLineMatches(String line, int lineNumber) {
-        regexMatcher = regexPattern.matcher(line);
-        while (regexMatcher.find()) {
-            
-            int charOffset = regexMatcher.start();
-            String nameMatched = regexMatcher.group();
-            partialListOfMatches.add(new Match(nameMatched, lineNumber, charOffset));
-        }
+        partialListOfMatches.addAll(ahoCorasick.lineListOfMatches(line, lineNumber));
     }
 
     public List<Match> getMatches() {

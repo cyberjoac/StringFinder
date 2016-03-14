@@ -17,25 +17,13 @@ import java.util.concurrent.Future;
  */
 public class BigIdStringFinder {
 
-    // Regex for matching the 50 most frequent English names.
-    // \b at beginning and end for matching exactly the name (not valid if letters
-    // following of before.
-    // /i Ignore case
-    // /g Global search
-    public static final String listOfNamesRegex = "\\b(James|John|Robert|"
-            + "Michael|William|David|Richard|Charles|Joseph|Thomas|Christopher|"
-            + "Daniel|Paul|Mark|Donald|George|Kenneth|Steven|Edward|Brian|"
-            + "Ronald|Anthony|Kevin|Jason|Matthew|Gary|Timothy|Jose|Larry|"
-            + "Jeffrey|Frank|Scott|Eric|Stephen|Andrew|Raymond|Gregory|Joshua|"
-            + "Jerry|Dennis|Walter|Patrick|Peter|Harold|Douglas|Henry|Carl|"
-            + "Arthur|Ryan|Roger)\\b";
-
     private final String fileName;
 
     // 10 sounds like a reasonable number of threads.
     private static final int NUMBER_OF_THREADS = 10;
 
     private List<Matcher> matchers;
+    private AhoCorasick ahoCorasick;
     private Aggregator aggregator;
     private ExecutorService executorService;
     private Collection<Future<?>> futures;
@@ -47,6 +35,7 @@ public class BigIdStringFinder {
      */
     public BigIdStringFinder(String fileName) {
         this.fileName = fileName;
+        this.ahoCorasick = new AhoCorasick("list-of-names.csv");
         this.matchers = new ArrayList<Matcher>();
         this.aggregator = new Aggregator();
         // Our Executor service will be responsible for distributing the Matchers 
@@ -99,7 +88,7 @@ public class BigIdStringFinder {
     
     private void startAsynchronousMatcher(ArrayList<String> thousandLines, int lineNumber) {
         // .clone is necessary for thread-safe operation.
-        Matcher matcher = new Matcher((ArrayList<String>) thousandLines.clone(), lineNumber);
+        Matcher matcher = new Matcher((ArrayList<String>) thousandLines.clone(), lineNumber, ahoCorasick);
         // Executes in a new thread for efficiency and save 
         // the future for polling its completion.
         futures.add(executorService.submit(matcher));
